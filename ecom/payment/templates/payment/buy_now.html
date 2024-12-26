@@ -1,0 +1,76 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+  
+
+        <!-- Header-->
+        <header class="bg-dark py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="text-center text-white">
+                    <h1 class="display-4 fw-bolder">Buy Now</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">Review Your Order...</p>
+
+                </div>
+            </div>
+        </header>
+        <br/>
+        <div class="container">
+            <div class="row">
+                
+                    <div class="col-md-6 offset-md-3">
+                        <div class="card">
+                            <div class="card-header">
+                              Order Summary
+                            </div>
+                            <div class="card-body">
+                              
+                                Product: {{product}}<br/>
+                                Price: {{ product.price }}<br/>
+                                Quantity: {{quantity}}<br/>
+                                Size: {{selected_size}}<br/>
+                                
+
+                                    
+                                    
+                                
+                                <strong>Total: BDT{{total_price}} (Delivery Charge Included)</strong>
+                                <br/><br/>
+                                <a href="{% url 'product' product.id %}" class="btn btn-sm btn-outline-secondary">Update Items</a>
+                            </div>
+                          </div>
+                          <br/><br/>
+                          <div class="card">
+                            <div class="card-header">
+                              Shipping Info
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="{% url 'process_buy_now_order' %}">
+                                    {% csrf_token %}
+
+                                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                                    <input type="hidden" name="product_qty" value="{{ quantity }}">
+                                    <input type="hidden" name="product_size" value="{{ selected_size.id }}">
+
+                                    {{ shipping_form.as_p }}
+                                
+                                
+                            </div>
+                          </div>
+                          <br/><br/>
+                          <button  type="submit" class="btn btn-success">
+                            Place Order
+                          </button>
+                          </form>
+                          <br/><br/>
+                    </div>
+            </div>
+        </div>
+                        
+         
+<br/><br/><br/><br/>
+
+
+
+
+{% endblock content %}

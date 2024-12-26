@@ -1,0 +1,98 @@
+{% load static %}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container px-4 px-lg-5">
+        <!--<a class="navbar-brand" href="{% url 'home' %}">Punjabi Ecommerce</a>-->
+        <div class="d-flex  align-items-center">
+            <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation" onclick="this.blur()"><span class="navbar-toggler-icon"></span></button>
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+            <img src="{{ logo.image.url }}" alt="Logo"  style="max-height: 70px;">
+            Rafah Style
+        </a>
+        </div>
+        
+
+
+        <!--<li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'search' %}">Search</a></li>-->
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                <!--<li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a></li>-->
+                <!--<li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'search' %}">Search</a></li>-->
+
+                <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About</a></li>
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Profile</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'update_user' %}">User Profile</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="{% url 'update_info'  %}">User Info</a></li>
+                    </ul>
+                </li>
+
+                {% if user.is_superuser %}
+                  
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Order</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" href="{% url 'shipped_dash' %}">Shipped Orders</a></li>
+                        <li><hr class="dropdown-divider" /></li>
+                        <li><a class="dropdown-item" href="{% url 'not_shipped_dash'  %}">Un-Shipped Orders</a></li>
+                    </ul>
+                </li>
+
+                {% else %}
+
+                <li class="nav-item"><a class="nav-link" href="{% url 'user_orders' %}">Orders</a></li>
+
+
+                {% endif %}
+                <!--<li class="nav-item"><a class="nav-link" href="{% url 'update_user' %}">Profile</a></li>-->
+                <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+
+                {% endif %}
+           
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Categories</a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <!--<li><a class="dropdown-item" href="{% url 'category_summary' %}">All Products</a></li>
+                        <li><hr class="dropdown-divider" /></li>-->
+                        {% for category in categories %}
+                        <li><a class="dropdown-item" href="{% url 'category' category %}">{{ category }}</a></li>
+                         
+                        {% endfor %}
+                        <!--<li><a class="dropdown-item" href="{% url 'category' 'Mobile' %}">Mobile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'category' 'Laptop' %}">Laptop</a></li>
+                        <li><a class="dropdown-item" href="{% url 'category' 'Book' %}">Book</a></li>
+
+                        <li><a class="dropdown-item" href="#!">New Arrivals</a></li>-->
+                    </ul>
+                </li>
+            </ul>
+            <!--<form class="d-flex">
+                <a href="{% url 'cart_summary' %}" class="btn btn-outline-dark" type="submit">
+                    <i class="bi-cart-fill me-1"></i>
+                    Cart
+                    <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart_quantity">{{ cart|length}}</span>
+                </a>
+            </form>-->
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center">
+            <a class="navbar-brand" href="{% url 'search' %}"><i class="bi bi-search"></i></a>
+    
+            <form class="navbar-brand d-flex">
+                <a href="{% url 'cart_summary' %}" class="btn btn-outline-dark" type="submit">
+                    <i class="bi-cart-fill me-1"></i>
+                    
+                    <span class="badge bg-dark text-white ms-1 rounded-pill" id="cart_quantity">{{ cart|length}}</span>
+                </a>
+            </form>
+        </div>
+    </div>
+</nav>

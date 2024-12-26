@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="container px-4 px-lg-5">
+    <br/><br/>
+    <div class="card mb-3 shadow" >
+        <div class="row g-0 align-items-center">
+          <div class="col-md-4 h-100 d-flex justify-content-center">
+            <img src="{{ product.image.url }}" class="img-fluid rounded-start" alt="...">
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <center>  
+              <h5 class="card-title">{{ product.name}}</h5>
+             
+                {% if product.is_sale %}
+                <strike>
+                  ৳{{ product.price}}
+                </strike>
+                &nbsp;
+                <br/>
+                
+                <i class="bi bi-star-fill" style="color: gold;"></i>
+                <i class="bi bi-star-fill" style="color: gold;"></i>
+                <i class="bi bi-star-fill" style="color: gold;"></i>
+                
+                
+
+                <br/>
+                ৳{{ product.sale_price }}
+              {% else %}
+              ৳{{ product.price }}
+              {% endif %}
+              <br/><br/>
+ 
+              <div class="row justify-content-center">
+                <div class="col-md-2">
+                  Size
+                  <br/>
+                </div>
+                <div class="col-md-2">
+                  <select class="form-select form-select-sm" id="size-cart" required>
+                    
+                    {% for size in sizes %}
+                    <option value="{{ size.id }}">{{size}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <br/>
+                <div class="row justify-content-center">
+                  <div class="col-md-2">
+                    Quantity
+                    <br/>
+                  </div>
+                  <div class="col-md-2">
+                    <select class="form-select form-select-sm" id="qty-cart">
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </select>
+                  </div>
+                </div>
+              <br/>  
+              
+              
+              
+
+              <button type="button" value="{{ product.id }}" class="btn btn-outline-dark" id="add-cart">Add to Cart</button>
+              <br/><br/>
+              <form method="POST" action="{% url 'buy_now' %}">
+                {% csrf_token %}
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="product_qty" id="buy-now-qty" value="1">
+                <input type="hidden" name="product_size" id="buy-now-size" value="1">
+                <button type="submit" class="btn btn-dark">Buy Now</button>
+
+              </form>
+            </center>
+            </div>
+          </div>
+        </div>
+    </div>
+</div>
+
+<div class="container px-4 px-lg-5">
+<div class="card shadow mb-3">
+  <div class="card-body">
+    <h5 class="card-title">Product Description</h5>
+    <p class="card-text">{{ product.description }}</p>
+  </div>
+</div>
+</div>
+</div>
+<br/>
+<script>
+
+  const qtySelect = document.getElementById('qty-cart');
+  const sizeSelect = document.getElementById('size-cart');
+
+  qtySelect.addEventListener('change', () =>{
+    document.getElementById('buy-now-qty').value = qtySelect.value;
+  });
+  sizeSelect.addEventListener('change', () =>{
+    document.getElementById('buy-now-size').value = sizeSelect.value;
+  });
+
+$(document).on('click', '#add-cart', function(e){
+  e.preventDefault();
+  $.ajax({
+    type: 'POST',
+    url : "{% url 'cart_add' %}",
+    data: {
+      product_id : $('#add-cart').val(),
+      product_qty: $('#qty-cart option:selected').text(),
+      size: $('#size-cart').val(),
+      csrfmiddlewaretoken: '{{ csrf_token }}',
+      action: 'post'
+    },
+    success: function(json) {
+      document.getElementById("cart_quantity").textContent = json.qty
+      location.reload();
+    },
+
+    error: function(xhr, errmsg, err){
+
+    }
+  });
+})
+
+$(document).on('click', '#buy-now', function(e) {
+  e.preventDefault();
+  const product_id = $(this).val();
+  console.log("Product ID", product_id);
+  $.ajax({
+    type: 'POST',
+    url: "{% url 'buy_now' %}",
+    data: {
+      product_id : $(this).val(),
+      product_qty: $('#qty-cart option:selected').text(),
+      product_size: $('#size-cart').val(),
+      csrfmiddlewaretoken: '{{ csrf_token }}',
+      action: 'post'
+    },
+    success: function() {
+      window.location.href = "{% url 'buy_now' %}";
+      
+    },
+    error: function(xhr, errmsg, err) {
+      alert("An error occured: "+ errmsg);
+    }
+  });
+})
+
+</script>
+{% endblock content %}

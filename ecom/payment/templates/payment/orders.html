@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block content %}
+
+
+<div class="container px-4 px-lg-5">
+    <div class="row justify-content-center">
+        <center>
+            <div class="col-8">
+                <br/><br/>
+                
+                <div class="card mb-3" id="orderCard">
+                    <div class="card-header">
+                      Order {{ order.id }} - BDT{{ order.amount_paid }}
+                    </div><br/>
+                    <h4 class="card-title text-decoration-underline">ORDER INVOICE</h4>
+                    <div class="card-body text-start">
+                      <h6 class="card-title">Customer Information</h6>
+                      Name: {{ order.full_name }}<br/>
+                      Phone: {{ order.phone }}<br/>
+                      Email: {{ order.email }}<br/>
+                      {% if order.date_shipped %}
+
+                      Date Shipped: {{ order.date_shipped }}
+
+                      {% else %}
+
+                      Date Ordered: {{ order.date_ordered }}
+                        
+                      {% endif %}
+                    
+                      <br/>
+
+                      
+                      <p>Address: {{ order.shipping_address }}</p><br/>
+                    </div>
+
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            
+                            <th scope="col">Product Name</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Size</th>
+                            <th scope="col">Price</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+
+                      {% for item in items %}
+                      <tr>
+                        <td>{{item.product }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.size }}</td>
+                        <td>{{ item.price }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                      </table>
+                      <br/><br/>
+                    </div>
+                      {% if not order.shipped %}
+                        
+                      
+                      
+                      <br/>
+                   
+                    <form method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="shipping_status" value="true">
+                      <button type="Submit" class="btn btn-success">Mark As Shipped</button>
+                    </form>
+
+                    {% else %}
+                    <form method="POST">
+                      {% csrf_token %}
+                      <input type="hidden" name="shipping_status" value="false">
+                      <button type="Submit" class="btn btn-danger">Mark As Not Shipped</button>
+                    </form>
+
+                    {% endif %} 
+                    <br/>
+                    <button class="btn btn-primary" id="downloadPDF">Download PDF</button>
+                <br/><br/>
+                  </div>
+
+                <br/><br/>
+            </div>
+        </center>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- Include jsPDF Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+<script>
+    document.getElementById('downloadPDF').addEventListener('click', async function () {
+        const { jsPDF } = window.jspdf;
+
+        // A4 dimensions in pixels (approx. for 96 DPI screens)
+        const A4_WIDTH = 595.28; // points
+        const A4_HEIGHT = 841.89; // points
+
+        // Get the card element
+        const orderCard = document.getElementById('orderCard');
+
+        // Disable the button during PDF generation
+        const downloadButton = document.getElementById('downloadPDF');
+        downloadButton.disabled = true;
+        downloadButton.innerText = "Generating PDF...";
+
+        try {
+            // Render the card as an image
+            const canvas = await html2canvas(orderCard, {
+                scale: 2, // High resolution for better quality
+            });
+
+            const imgData = canvas.toDataURL("image/png");
+
+            // Create a new jsPDF instance
+            const pdf = new jsPDF("p", "pt", "a4");
+
+            // Calculate dimensions to fit the image to A4 size
+            const imgWidth = A4_WIDTH;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+            // Add the image to the PDF, fitting it on a single page
+            pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+
+            // Save the PDF
+            pdf.save("Order_{{ order.id }}.pdf");
+        } catch (error) {
+            console.error("PDF generation failed:", error);
+        } finally {
+            // Re-enable the button
+            downloadButton.disabled = false;
+            downloadButton.innerText = "Download PDF";
+        }
+    });
+</script>
+{% endblock content %}
